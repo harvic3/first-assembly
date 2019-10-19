@@ -1,0 +1,35 @@
+	LIST P=16F873A
+INCLUDE P16F873A.INC; Define registros y bits.
+CBLOCK 20H; Registros de proposito gral.
+REG1 
+ENDC
+
+			ORG			00; Se le dice al programa que inicie desde cero
+			GOTO		CONFIG
+			ORG			04
+			GOTO		EXTINT
+
+EXTINT		BCF			INTCON,INTF
+			MOVLW		.10
+			ADDWF		REG1
+			MOVF		REG1,W
+			MOVWF		PORTC
+			RETFIE		
+
+PROG		NOP
+			SLEEP
+			NOP
+
+CONFIG		NOP
+			BANKSEL		TRISA
+			CLRF		TRISC
+			BSF			TRISB,0
+			BCF			OPTION_REG,6
+			MOVLW		B'10010000'
+			MOVWF		INTCON
+			BANKSEL		PORTA
+			CLRF		REG1
+			CLRF		PORTC
+			GOTO		PROG
+
+END
